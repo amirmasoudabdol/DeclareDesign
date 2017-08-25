@@ -106,3 +106,6 @@ get_unique_variables_by_level <- function(data, ID_label) {
                    length(unique(x)))) == 1)
   return(names(level_variables)[level_variables])
 }
+
+
+

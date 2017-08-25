@@ -144,34 +144,6 @@ declare_design <- function(...,
     )
   }
 
-  process_population <- function(population) {
-    ## the first part of the DGP must be a data.frame. Take what the user creates and turn it into a data.frame.
-    if (any(class(population) == "data.frame")) {
-      current_df <- population
-    } else if (class(population) == "call") {
-      try(current_df <- population, silent = TRUE)
-      if (!exists("current_df") |
-          !any(class(current_df) == "data.frame")) {
-        stop(
-          "The first element of your design must be a data.frame or a function that returns a data.frame. You provided a function that did not return a data.frame."
-        )
-      }
-    } else if (class(population) == "function") {
-      try(current_df <- population(), silent = TRUE)
-      if (!exists("current_df") |
-          !any(class(current_df) == "data.frame")) {
-        stop(
-          "The first element of your design must be a data.frame or a function that returns a data.frame. You provided a function that did not return a data.frame."
-        )
-      }
-    } else {
-      stop(
-        "The first element of your design must be a data.frame or a function that returns a data.frame."
-      )
-    }
-    return(current_df)
-  }
-
   # this extracts the "DGP" parts of the causal order and runs them.
   data_function <- function() {
     current_df <- process_population(causal_order[[1]])
@@ -188,7 +160,6 @@ declare_design <- function(...,
   }
 
   # This does causal order step by step; saving calculated estimands and estimates along the way
-
   design_function <- function() {
     current_df <- process_population(causal_order[[1]])
 
@@ -214,46 +185,6 @@ declare_design <- function(...,
       }
     }
     return(list(estimates_df = estimates_df, estimands_df = estimands_df))
-  }
-
-  get_added_variables <- function(last_df = NULL, current_df) {
-    current_names <- names(current_df)
-    if (is.null(last_df)) {
-      return(current_names)
-    } else {
-      return(current_names[!current_names %in% names(last_df)])
-    }
-  }
-
-  get_modified_variables <- function(last_df = NULL, current_df) {
-    current_names <- names(current_df)
-    shared_names <-
-      current_names[current_names %in% names(last_df)]
-    variables_modified <- sapply(shared_names, function(var)
-      ifelse(nrow(last_df) != nrow(current_df), FALSE,
-      isTRUE(all.equal(last_df[, var], current_df[, var])) == FALSE))
-    if (any(variables_modified)) {
-      return(shared_names[variables_modified])
-    } else {
-      return(NULL)
-    }
-  }
-
-  get_formula_from_step <- function(step){
-    call <- attributes(step)$call
-    type <- attributes(step)$type
-    if (!is.null(call) & !is.null(type) & type != "declare_step") {
-      args <- lang_args(call)
-      has_formula <- sapply(args, is_formula)
-      formulae <- args[has_formula]
-      if (length(formulae) == 1) {
-        return(formulae[[1]])
-      } else {
-        return(NULL)
-      }
-    } else {
-      return(NULL)
-    }
   }
 
   summary_function <- function() {
@@ -335,11 +266,12 @@ declare_design <- function(...,
     )
   }
 
-  return(structure(
+  design_object <- structure(
     list(
       data_function = data_function,
       design_function = design_function,
       summary_function = summary_function,
+      causal_order = causal_order,
       causal_order_expr = causal_order_expr,
       causal_order_env = causal_order_env,
       function_types = function_types,
@@ -352,7 +284,146 @@ declare_design <- function(...,
       call = match.call()
     ),
     class = "design"
-  ))
+  )
+
+  #validate_design(design_object)
 
 }
 
+#' @export
+validate_design <- function(design) {
+
+  causal_order <- design$causal_order
+  function_types <- design$function_types
+
+  variables_at_step <- potential_outcomes_declared_at_step <-
+    outcomes_revealed_at_step <- vector("list", length(causal_order))
+
+  current_df <- process_population(causal_order[[1]])
+
+  variables_at_step[[1]] <- colnames(current_df)
+
+  last_df <- current_df
+
+  estimates_df <- estimands_df <- data.frame()
+
+  if (length(causal_order) > 1) {
+    for (i in 2:length(causal_order)) {
+      # if it's a dgp
+      if (causal_order_types[i] == "dgp") {
+        current_df <- causal_order[[i]](current_df)
+        variables_at_step[[i]] <- colnames(current_df)
+        if (function_types[i] == "potential_outcomes") {
+          pos_at_current_step <-
+            variables_at_step[[i]][!variables_at_step[[i]] %in% variables_at_step[[i - 1]]]
+          potential_outcomes_declared_at_step[[i]] <-
+            get_outcome_details_from_columns(pos_at_current_step)
+        }
+      } else if (causal_order_types[i] == "estimand") {
+        # if it's an estimand
+        estimands_df <-
+          rbind(estimands_df, causal_order[[i]](current_df))
+
+      } else if (causal_order_types[i] == "estimator") {
+        # if it's an estimator
+        estimates_df <-
+          rbind(estimates_df, causal_order[[i]](current_df))
+
+      }
+      # do we need to add a reveal_outcomes step?
+      if (any(cond)) {
+        causal_order <-
+          list(causal_order[[c(1:i)]], reveal_outcomes_call, causal_order[[(i +
+                                                                               1):length(causal_order)]])
+
+        options <- quo(add_step(!!! after = causal_order_expr[[i]]))
+        quo(modify_design(!!! options))
+
+        return(modify_design(design, add_step(, after = causa)))
+      }
+
+      last_df <- current_df
+    }
+  }
+
+  cat("\nCongratulations, your design is ready.\n")
+
+  invisible(design)
+}
+
+process_population <- function(population) {
+  ## the first part of the DGP must be a data.frame. Take what the user creates and turn it into a data.frame.
+  if (any(class(population) == "data.frame")) {
+    current_df <- population
+  } else if (class(population) == "call") {
+    try(current_df <- population, silent = TRUE)
+    if (!exists("current_df") |
+        !any(class(current_df) == "data.frame")) {
+      stop(
+        "The first element of your design must be a data.frame or a function that returns a data.frame. You provided a function that did not return a data.frame."
+      )
+    }
+  } else if (class(population) == "function") {
+    try(current_df <- population(), silent = TRUE)
+    if (!exists("current_df") |
+        !any(class(current_df) == "data.frame")) {
+      stop(
+        "The first element of your design must be a data.frame or a function that returns a data.frame. You provided a function that did not return a data.frame."
+      )
+    }
+  } else {
+    stop(
+      "The first element of your design must be a data.frame or a function that returns a data.frame."
+    )
+  }
+  return(current_df)
+}
+
+get_added_variables <- function(last_df = NULL, current_df) {
+  current_names <- names(current_df)
+  if (is.null(last_df)) {
+    return(current_names)
+  } else {
+    return(current_names[!current_names %in% names(last_df)])
+  }
+}
+
+get_modified_variables <- function(last_df = NULL, current_df) {
+  current_names <- names(current_df)
+  shared_names <-
+    current_names[current_names %in% names(last_df)]
+  variables_modified <- sapply(shared_names, function(var)
+    ifelse(nrow(last_df) != nrow(current_df), FALSE,
+           isTRUE(all.equal(last_df[, var], current_df[, var])) == FALSE))
+  if (any(variables_modified)) {
+    return(shared_names[variables_modified])
+  } else {
+    return(NULL)
+  }
+}
+
+get_formula_from_step <- function(step){
+  call <- attributes(step)$call
+  type <- attributes(step)$type
+  if (!is.null(call) & !is.null(type) & type != "declare_step") {
+    args <- lang_args(call)
+    has_formula <- sapply(args, is_formula)
+    formulae <- args[has_formula]
+    if (length(formulae) == 1) {
+      return(formulae[[1]])
+    } else {
+      return(NULL)
+    }
+  } else {
+    return(NULL)
+  }
+}
+
+get_outcome_details_from_columns <- function(variable_names){
+  split_vars <- strsplit(variable_names, "_")
+  split_vars <- unique(lapply(split_vars, function(x) x[c(1, seq(2, length(x), 2))]))
+  outcome_variable_names <- lapply(split_vars, function(x) x[1])
+  assignment_variable_names <- lapply(split_vars, function(x) x[-1])
+  return(list(outcome_variable_names = outcome_variable_names,
+              assignment_variable_names = assignment_variable_names))
+}

@@ -26,6 +26,9 @@ test_that("test the full declare design setup", {
                            reveal_outcomes,
                            my_estimator)
 
+  debugonce(validate_design)
+  validate_design(design)
+
   head(design$data_function())
   design$design_function()
 
