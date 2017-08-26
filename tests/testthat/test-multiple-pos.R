@@ -20,7 +20,7 @@ test_that("multiple potential outcomes", {
                               my_potential_outcomes_attrition,
                               my_assignment,
                               reveal_outcomes(outcome_variable_name = "R", assignment_variable_name = "Z"),
-                              reveal_outcomes(outcome_variable_name = "Y", assignment_variable_name = "Z"))
+                              reveal_outcomes(outcome_variable_name = "Y", assignment_variable_name = "Z"), infer_outcomes = FALSE)
 
   head(draw_data(my_design))
 

@@ -4,7 +4,7 @@
 \alias{modify_design}
 \title{Modify a Design}
 \usage{
-modify_design(design, ..., infer_outcomes = TRUE)
+modify_design(design, ..., infer_outcomes = FALSE)
 }
 \arguments{
 \item{design}{a design object, usually created by \code{\link{declare_design}}, \code{\link{quick_design}}, or \code{\link{download_design}}.}

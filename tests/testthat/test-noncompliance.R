@@ -50,7 +50,7 @@ test_that("Noncompliance", {
                            my_assignment,
                            reveal_outcomes(outcome_variable_name = "D", assignment_variable_name = "Z"),
                            reveal_outcomes(outcome_variable_name = "Y", assignment_variable_name = "D"),
-                           cace_hat)
+                           cace_hat, infer_outcomes = FALSE)
 
 
   head(design$data_function())
