@@ -38,6 +38,87 @@
 #' @name post_design
 NULL
 
+
+#' @rdname post_design
+#'
+#' @export
+validate_design <- function(design) {
+
+  causal_order <- design$causal_order
+  causal_order_types <- design$causal_order_types
+  function_types <- design$function_types
+  causal_order_expr <- design$causal_order_expr
+
+  variables_at_step <- vector("list", length(causal_order))
+
+  outcomes_not_yet_revealed <- reveal_outcomes_calls <- list()
+
+  current_df <- process_population(causal_order[[1]])
+
+  variables_at_step[[1]] <- colnames(current_df)
+
+  last_df <- current_df
+
+  estimates_df <- estimands_df <- data.frame()
+
+  if (length(causal_order) > 1) {
+    for (i in 2:length(causal_order)) {
+      # if it's a dgp
+      if (causal_order_types[i] == "dgp") {
+        current_df <- causal_order[[i]](current_df)
+        variables_at_step[[i]] <- colnames(current_df)
+        if (function_types[i] == "potential_outcomes") {
+          pos_at_current_step <-
+            variables_at_step[[i]][!variables_at_step[[i]] %in% variables_at_step[[i - 1]]]
+          outcomes_not_yet_revealed <- c(
+            outcomes_not_yet_revealed,
+            get_outcome_details_from_columns(pos_at_current_step)
+          )
+        }
+      } else if (causal_order_types[i] == "estimand") {
+        # if it's an estimand
+        estimands_df <-
+          rbind(estimands_df, causal_order[[i]](current_df))
+
+      } else if (causal_order_types[i] == "estimator") {
+        # if it's an estimator
+        estimates_df <-
+          rbind(estimates_df, causal_order[[i]](current_df))
+
+      }
+      # do we need to add a reveal_outcomes step?
+
+      j <- 1
+      while (j <= length(outcomes_not_yet_revealed)) {
+        reveal_call <-
+          quo(reveal_outcomes(!!!outcomes_not_yet_revealed[[j]]))
+        reveal_call_check <-
+          lang_modify(reveal_call, data = current_df)
+        does_reveal_outcome <-
+          !any(class(try(eval_tidy(reveal_call_check), silent = TRUE)
+          ) == "try-error")
+        if (does_reveal_outcome) {
+          current_df <- eval_tidy(reveal_call_check)
+          reveal_outcomes_calls <- c(reveal_outcomes_calls,
+                                     quo(add_step(
+                                       !!!reveal_call,
+                                       after = !!quo_expr(causal_order_expr[[i]])
+                                     )))
+          outcomes_not_yet_revealed[j] <- NULL
+        }
+        j <- j + 1
+      }
+      last_df <- current_df
+    }
+
+    if (length(reveal_outcomes_calls) > 0) {
+      modify_call <- quo(modify_design(design, validate = FALSE, !!!reveal_outcomes_calls))
+      design <- eval_tidy(modify_call)
+    }
+  }
+  return(design)
+}
+
 #' @rdname post_design
 #'
 #' @export

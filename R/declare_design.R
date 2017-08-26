@@ -1,5 +1,6 @@
 
 
+
 #' Declare Design
 #'
 #' @param ... A set of steps in a research design, beginning with a \code{data.frame} representing the population or a function that draws the population. Steps are evaluated sequentially. With the exception of the first step, all steps must be functions that take a \code{data.frame} as an argument and return a \code{data.frame}. Typically, many steps are declared using the \code{declare_} functions, i.e., \code{\link{declare_population}}, \code{\link{declare_population}}, \code{\link{declare_sampling}}, \code{\link{declare_potential_outcomes}}, \code{\link{declare_estimand}}, \code{\link{declare_assignment}}, and \code{\link{declare_estimator}}. Functions from the \code{dplyr} package such as mutate can also be usefully included.
@@ -7,6 +8,7 @@
 #' @param authors (optional) The authors of the study, as a character string.
 #' @param description (optional) A description of the design in words, as a character string, stored alongside the declaration in code.
 #' @param citation (optional) The preferred citation for the design, as a character string. Either include the full citation in text, or paste a BibTeX entry. If title and authors are specified and you leave citation empty, a BibTeX entry will be created automatically.
+#' @param validate_design a logical indicating whether the design should be validated.
 #'
 #' @details
 #'
@@ -72,7 +74,8 @@ declare_design <- function(...,
                            title = NULL,
                            authors = NULL,
                            description = NULL,
-                           citation = NULL) {
+                           citation = NULL,
+                           validate = TRUE) {
   # process bibtex
 
   timestamp <- Sys.time()
@@ -226,9 +229,13 @@ declare_design <- function(...,
           if (!is.null(variables_modified_names)) {
             variables_modified[[i]] <-
               lapply(variables_modified_names,
-                     function(var) list(before = describe_variable(last_df[, var, drop = FALSE]),
-                                      after = describe_variable(current_df[, var, drop = FALSE])))
-            names(variables_modified[[i]]) <- variables_modified_names
+                     function(var)
+                       list(
+                         before = describe_variable(last_df[, var, drop = FALSE]),
+                         after = describe_variable(current_df[, var, drop = FALSE])
+                       ))
+            names(variables_modified[[i]]) <-
+              variables_modified_names
           }
 
           if (!is.null(attributes(causal_order[[i]])$summary_function)) {
@@ -237,8 +244,19 @@ declare_design <- function(...,
           }
 
           if (nrow(current_df) != nrow(last_df)) {
-            N[[i]] <- paste0("N = ", nrow(current_df), " (", abs(nrow(current_df) - nrow(last_df)),
-                             ifelse(nrow(current_df) > nrow(last_df), " added", " subtracted"), ")")
+            N[[i]] <-
+              paste0(
+                "N = ",
+                nrow(current_df),
+                " (",
+                abs(nrow(current_df) - nrow(last_df)),
+                ifelse(
+                  nrow(current_df) > nrow(last_df),
+                  " added",
+                  " subtracted"
+                ),
+                ")"
+              )
           }
 
           last_df <- current_df
@@ -257,16 +275,18 @@ declare_design <- function(...,
       }
     }
     structure(
-      list(variables_added = variables_added,
-           quantities_added = quantities_added,
-           variables_modified = variables_modified,
-           N = N,
-           formulae = formulae),
+      list(
+        variables_added = variables_added,
+        quantities_added = quantities_added,
+        variables_modified = variables_modified,
+        N = N,
+        formulae = formulae
+      ),
       class = "design_summary"
     )
   }
 
-  design_object <- structure(
+  design <- structure(
     list(
       data_function = data_function,
       design_function = design_function,
@@ -286,69 +306,12 @@ declare_design <- function(...,
     class = "design"
   )
 
-  #validate_design(design_object)
-
-}
-
-#' @export
-validate_design <- function(design) {
-
-  causal_order <- design$causal_order
-  function_types <- design$function_types
-
-  variables_at_step <- potential_outcomes_declared_at_step <-
-    outcomes_revealed_at_step <- vector("list", length(causal_order))
-
-  current_df <- process_population(causal_order[[1]])
-
-  variables_at_step[[1]] <- colnames(current_df)
-
-  last_df <- current_df
-
-  estimates_df <- estimands_df <- data.frame()
-
-  if (length(causal_order) > 1) {
-    for (i in 2:length(causal_order)) {
-      # if it's a dgp
-      if (causal_order_types[i] == "dgp") {
-        current_df <- causal_order[[i]](current_df)
-        variables_at_step[[i]] <- colnames(current_df)
-        if (function_types[i] == "potential_outcomes") {
-          pos_at_current_step <-
-            variables_at_step[[i]][!variables_at_step[[i]] %in% variables_at_step[[i - 1]]]
-          potential_outcomes_declared_at_step[[i]] <-
-            get_outcome_details_from_columns(pos_at_current_step)
-        }
-      } else if (causal_order_types[i] == "estimand") {
-        # if it's an estimand
-        estimands_df <-
-          rbind(estimands_df, causal_order[[i]](current_df))
-
-      } else if (causal_order_types[i] == "estimator") {
-        # if it's an estimator
-        estimates_df <-
-          rbind(estimates_df, causal_order[[i]](current_df))
-
-      }
-      # do we need to add a reveal_outcomes step?
-      if (any(cond)) {
-        causal_order <-
-          list(causal_order[[c(1:i)]], reveal_outcomes_call, causal_order[[(i +
-                                                                               1):length(causal_order)]])
-
-        options <- quo(add_step(!!! after = causal_order_expr[[i]]))
-        quo(modify_design(!!! options))
-
-        return(modify_design(design, add_step(, after = causa)))
-      }
-
-      last_df <- current_df
-    }
+  if (validate) {
+    return(validate_design(design))
+  } else {
+    return(design)
   }
 
-  cat("\nCongratulations, your design is ready.\n")
-
-  invisible(design)
 }
 
 process_population <- function(population) {
@@ -393,8 +356,11 @@ get_modified_variables <- function(last_df = NULL, current_df) {
   shared_names <-
     current_names[current_names %in% names(last_df)]
   variables_modified <- sapply(shared_names, function(var)
-    ifelse(nrow(last_df) != nrow(current_df), FALSE,
-           isTRUE(all.equal(last_df[, var], current_df[, var])) == FALSE))
+    ifelse(
+      nrow(last_df) != nrow(current_df),
+      FALSE,
+      isTRUE(all.equal(last_df[, var], current_df[, var])) == FALSE
+    ))
   if (any(variables_modified)) {
     return(shared_names[variables_modified])
   } else {
@@ -402,7 +368,7 @@ get_modified_variables <- function(last_df = NULL, current_df) {
   }
 }
 
-get_formula_from_step <- function(step){
+get_formula_from_step <- function(step) {
   call <- attributes(step)$call
   type <- attributes(step)$type
   if (!is.null(call) & !is.null(type) & type != "declare_step") {
@@ -419,11 +385,16 @@ get_formula_from_step <- function(step){
   }
 }
 
-get_outcome_details_from_columns <- function(variable_names){
+get_outcome_details_from_columns <- function(variable_names) {
   split_vars <- strsplit(variable_names, "_")
-  split_vars <- unique(lapply(split_vars, function(x) x[c(1, seq(2, length(x), 2))]))
-  outcome_variable_names <- lapply(split_vars, function(x) x[1])
-  assignment_variable_names <- lapply(split_vars, function(x) x[-1])
-  return(list(outcome_variable_names = outcome_variable_names,
-              assignment_variable_names = assignment_variable_names))
+  split_vars <-
+    unique(lapply(split_vars, function(x)
+      x[c(1, seq(2, length(x), 2))]))
+  return_list <- lapply(split_vars, function(x)
+    list(
+      outcome_variable_names = x[1],
+      assignment_variable_names = x[-1]
+    ))
+  names(return_list) <- sapply(split_vars, paste, collapse = "-")
+  return(return_list)
 }
