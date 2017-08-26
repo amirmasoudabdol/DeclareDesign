@@ -62,7 +62,6 @@ test_that("regression from estimatr works as an estimator", {
                               my_potential_outcomes,
                               pate,
                               my_assignment,
-                              reveal_outcomes,
                               pate_estimator)
 
   my_design$design_function()

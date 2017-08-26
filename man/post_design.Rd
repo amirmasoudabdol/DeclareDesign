@@ -2,14 +2,11 @@
 % Please edit documentation in R/design_helper_functions.R
 \name{post_design}
 \alias{post_design}
-\alias{validate_design}
 \alias{draw_data}
 \alias{get_estimates}
 \alias{get_estimands}
 \title{Explore your design}
 \usage{
-validate_design(design)
-
 draw_data(design)
 
 get_estimates(design)

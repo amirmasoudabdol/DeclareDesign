@@ -14,14 +14,13 @@ test_that("quick_design works", {
                                 my_potential_outcomes,
                                 pate,
                                 my_assignment,
-                                reveal_outcomes,
                                 pate_estimator)
     return(my_design)
   }
 
   draw_data(two_arm_trial(N = 50))
 
-  design <- quick_design(template = two_arm_trial, N = 2)
+  design <- quick_design(template = two_arm_trial, N = 10)
 
   draw_data(design)
 
@@ -69,7 +68,6 @@ test_that("vary works", {
                                 my_potential_outcomes,
                                 pate,
                                 my_assignment,
-                                reveal_outcomes,
                                 pate_estimator)
     return(my_design)
   }
@@ -95,7 +93,6 @@ test_that("power curve", {
                                 my_potential_outcomes,
                                 pate,
                                 my_assignment,
-                                reveal_outcomes,
                                 pate_estimator)
     return(my_design)
   }

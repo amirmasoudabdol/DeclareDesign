@@ -21,7 +21,8 @@ test_that("attrition as a PO", {
     my_potential_outcomes_attrition,
     my_assignment,
     reveal_outcomes(outcome_variable_name = "R"),
-    reveal_outcomes(attrition_variable_name = "R")
+    reveal_outcomes(attrition_variable_name = "R"),
+    infer_outcomes = FALSE
   )
 
   head(draw_data(my_design))
@@ -41,7 +42,8 @@ test_that("attrition as a PO", {
     my_potential_outcomes_attrition,
     my_assignment,
     reveal_outcomes(outcome_variable_name = "R"),
-    reveal_outcomes(attrition_variable_name = "R")
+    reveal_outcomes(attrition_variable_name = "R"),
+    infer_outcomes = FALSE
   )
 
   head(draw_data(my_design))

@@ -36,7 +36,7 @@
 #'  modify_design(design, add_step(dplyr::mutate(income = noise^2), before = my_assignment))
 #'
 #'  modify_design(design, remove_step(my_assignment))
-modify_design <- function(design, ..., validate = TRUE) {
+modify_design <- function(design, ..., infer_outcomes = TRUE) {
   causal_order_expr <- design$causal_order_expr
   original_env <- design$causal_order_env
 
@@ -144,7 +144,7 @@ modify_design <- function(design, ..., validate = TRUE) {
     }
   }
 
-  causal_order_expr$validate <- validate
+  causal_order_expr$infer_outcomes <- infer_outcomes
 
   new_design <- do.call(what = declare_design,
                         args = causal_order_expr,

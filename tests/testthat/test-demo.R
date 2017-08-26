@@ -98,7 +98,6 @@ test_that("demo runs", {
                            dplyr::mutate(big_income = 5*income), #whoa!
                            my_sampling,
                            my_assignment,
-                           reveal_outcomes,
                            my_estimator_dim)
 
   ## ------------------------------------------------------------------------
@@ -200,7 +199,6 @@ test_that("demo runs", {
                                 my_estimand,
                                 my_sampling,
                                 my_assignment,
-                                reveal_outcomes,
                                 my_estimator_dim)
     return(my_design)
   }
@@ -235,8 +233,8 @@ test_that("demo runs", {
                               my_potential_outcomes_attrition,
                               my_assignment,
                               reveal_outcomes(outcome_variable_name = "R"),
-                              reveal_outcomes(attrition_variable_name = "R"))
-
+                              reveal_outcomes(attrition_variable_name = "R"),
+                              infer_outcomes = FALSE)
   head(draw_data(my_design)[, c("ID", "Y_Z_0", "Y_Z_1", "R_Z_0", "R_Z_1", "Z", "R", "Y")])
 
   ## ------------------------------------------------------------------------

@@ -75,7 +75,7 @@ declare_design <- function(...,
                            authors = NULL,
                            description = NULL,
                            citation = NULL,
-                           validate = TRUE) {
+                           infer_outcomes = TRUE) {
   # process bibtex
 
   timestamp <- Sys.time()
@@ -306,8 +306,8 @@ declare_design <- function(...,
     class = "design"
   )
 
-  if (validate) {
-    return(validate_design(design))
+  if (infer_outcomes) {
+    return(infer_outcomes(design))
   } else {
     return(design)
   }

@@ -38,11 +38,7 @@
 #' @name post_design
 NULL
 
-
-#' @rdname post_design
-#'
-#' @export
-validate_design <- function(design) {
+infer_outcomes <- function(design) {
 
   causal_order <- design$causal_order
   causal_order_types <- design$causal_order_types
@@ -112,7 +108,7 @@ validate_design <- function(design) {
     }
 
     if (length(reveal_outcomes_calls) > 0) {
-      modify_call <- quo(modify_design(design, validate = FALSE, !!!reveal_outcomes_calls))
+      modify_call <- quo(modify_design(design, infer_outcomes = FALSE, !!!reveal_outcomes_calls))
       design <- eval_tidy(modify_call)
     }
   }

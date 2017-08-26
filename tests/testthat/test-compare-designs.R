@@ -13,19 +13,16 @@ test_that("compare_designs works", {
   pate_estimator <- declare_estimator(Y ~ Z, estimand = pate)
   sate_estimator <- declare_estimator(Y ~ Z, estimand = sate)
 
-
   my_design_1 <- declare_design(my_population,
                                 my_potential_outcomes,
                                 pate,
                                 my_assignment,
-                                reveal_outcomes,
                                 pate_estimator)
 
   my_design_2 <- declare_design(my_population,
                                 my_potential_outcomes,
                                 sate,
                                 my_assignment,
-                                reveal_outcomes,
                                 sate_estimator)
 
 
