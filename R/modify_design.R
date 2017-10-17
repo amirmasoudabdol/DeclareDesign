@@ -73,6 +73,23 @@ modify_design <- function(design, ...) {
   }
 
   dots <- quos(...)
+
+  named_dots <- dots[names(dots) != ""]
+
+  if(! all(names(named_dots) %in% design$parameters)){
+    stop("If you provide new parameters to the design, they must be named the same as the parameters in design$parameters.")
+  }
+
+  for (i in seq_along(named_dots)) {
+    assign(
+      x = names(named_dots)[i],
+      value = eval_tidy(named_dots[[i]]),
+      envir = original_env
+    )
+
+  }
+  # only operate further on unnamed dots
+  dots <- dots[names(dots) == ""]
   dots_funcs <- sapply(dots, function(x) lang_name(x))
 
   for (i in seq_along(dots)) {
@@ -142,6 +159,9 @@ modify_design <- function(design, ...) {
       }
 
     }
+
+
+
   }
 
   new_design <- do.call(what = declare_design,
@@ -254,3 +274,4 @@ remove_step <- function(...) {}
 #'
 #'  modify_design(design, remove_step(my_assignment))
 replace_step <- function(..., replace) {}
+

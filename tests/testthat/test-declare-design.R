@@ -29,6 +29,8 @@ test_that("test the full declare design setup", {
   head(design$data_function())
   design$design_function()
 
+
+
   summary(design)
 
   diagnose_design(design, sims = 2, bootstrap = FALSE, parallel = FALSE)

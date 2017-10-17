@@ -88,7 +88,6 @@ declare_estimator <- function(...,
   }
 
   args <- eval(substitute(alist(...)))
-  env <- freeze_environment(parent.frame())
   label <- substitute(label)
   if (!is.null(label)) {
     label <- as.character(label)
@@ -115,7 +114,7 @@ declare_estimator <- function(...,
       if ("coefficient_name" %in% names(formals(func))) {
         args$coefficient_name <- coefficient_name
       }
-      results <- do.call(func, args = args, envir = env)
+      results <- do.call(func, args = args)
       return_data <-
         data.frame(estimator_label = label,
                    results,
@@ -134,7 +133,7 @@ declare_estimator <- function(...,
     estimator_function_internal <- function(data) {
       args$data <- data
 
-      fit <- do.call(func, args = args, envir = env)
+      fit <- do.call(func, args = args)
 
       summ <- summary(fit)$coefficients
       summ <-

@@ -57,7 +57,6 @@
 declare_potential_outcomes <-
   function(..., potential_outcomes_function = potential_outcomes_function_default) {
     args <- eval(substitute(alist(...)))
-    env <- freeze_environment(parent.frame())
     func <- eval(potential_outcomes_function)
 
     if (!("data" %in% names(formals(func)))) {
@@ -66,7 +65,7 @@ declare_potential_outcomes <-
 
     potential_outcomes_function_internal <- function(data) {
       args$data <- data
-      do.call(func, args = args, envir = env)
+      do.call(func, args = args)
     }
 
     attributes(potential_outcomes_function_internal) <-

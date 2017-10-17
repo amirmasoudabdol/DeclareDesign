@@ -73,7 +73,6 @@
 #'
 declare_diagnosands <- function(..., diagnosand_function = NULL) {
   args <- eval(substitute(alist(...)))
-  env <- freeze_environment(parent.frame())
 
   # add error if you provide things to ... and diagnosand_function
 
@@ -81,7 +80,7 @@ declare_diagnosands <- function(..., diagnosand_function = NULL) {
     diagnosand_function <- function(data) {
       diagnosands_list <-
         lapply(args, function(i)
-          eval_tidy(i, data = data, env = env))
+          eval_tidy(i, data = data))
       data.frame(diagnosands_list)
     }
   }

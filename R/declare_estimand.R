@@ -43,7 +43,6 @@ declare_estimand <-
            estimand_function = estimand_function_default,
            label = NULL) {
     args <- eval(substitute(alist(...)))
-    env <- freeze_environment(parent.frame())
     func <- eval(estimand_function)
 
     ## handles four uses cases of labeling so it's really easy to label without specifying
@@ -67,7 +66,7 @@ declare_estimand <-
       if ("data" %in% names(formals(func))) {
         args$data <- data
       }
-      value <- do.call(func, args = args, envir = env)
+      value <- do.call(func, args = args)
       data.frame(
         estimand_label = label_internal,
         estimand = value,

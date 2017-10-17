@@ -54,14 +54,13 @@
 declare_sampling <-
   function(..., sampling_function = sampling_function_default) {
     args <- eval(substitute(alist(...)))
-    env <- freeze_environment(parent.frame())
     func <- eval(sampling_function)
     if (!("data" %in% names(formals(func)))) {
       stop("Please choose a sampling_function with a data argument.")
     }
     sampling_function_internal <- function(data) {
       args$data <- data
-      do.call(func, args = args, envir = env)
+      do.call(func, args = args)
     }
     attributes(sampling_function_internal) <-
       list(call = match.call(), type = "sampling")

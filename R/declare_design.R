@@ -26,7 +26,7 @@
 #'
 #' @return a list of two functions, the \code{design_function} and the \code{data_function}. The \code{design_function} runs the design once, i.e. draws the data and calculates any estimates and estimands defined in \code{...}, returned separately as two \code{data.frame}'s. The \code{data_function} runs the design once also, but only returns the final data.
 #'
-#' @importFrom rlang quos quo_expr eval_tidy quo_text lang_args is_formula
+#' @importFrom rlang quos quo_expr eval_tidy quo_text args is_formula
 #' @importFrom utils bibentry
 #' @export
 #'
@@ -72,7 +72,8 @@ declare_design <- function(...,
                            title = NULL,
                            authors = NULL,
                            description = NULL,
-                           citation = NULL) {
+                           citation = NULL,
+                           parameters = NULL) {
   # process bibtex
 
   timestamp <- Sys.time()
@@ -92,7 +93,7 @@ declare_design <- function(...,
 
   # Some preprocessing
 
-  causal_order_env <- freeze_environment(parent.frame())
+
 
   dots <- quos(...)
 
@@ -111,6 +112,10 @@ declare_design <- function(...,
   }
 
   causal_order <- eval_tidy(dots)
+
+  # for(i in seq_along(causal_order)){
+  #   environment(causal_order[[i]]) <- causal_order_env
+  # }
 
   function_types <- rep("", length(causal_order))
 
@@ -157,7 +162,8 @@ declare_design <- function(...,
         )
       }
     } else if (class(population) == "function") {
-      try(current_df <- population(), silent = TRUE)
+      try(current_df <- do.call(what = population, args = list(), env = causal_order_env),
+          silent = TRUE)
       if (!exists("current_df") |
           !any(class(current_df) == "data.frame")) {
         stop(
@@ -172,15 +178,23 @@ declare_design <- function(...,
     return(current_df)
   }
 
+
+  causal_order_env <- freeze_environment(parent.frame())
+
   # this extracts the "DGP" parts of the causal order and runs them.
   data_function <- function() {
-    current_df <- process_population(causal_order[[1]])
+    #current_df <- process_population(causal_order[[1]])
+    current_df <- do.call(what = process_population,args = list(population = causal_order[[1]]), env = causal_order_env)
 
     if (length(causal_order) > 1) {
       for (i in 2:length(causal_order)) {
         # if it's a dgp
         if (causal_order_types[i] == "dgp") {
-          current_df <- causal_order[[i]](current_df)
+          #current_df <- causal_order[[i]](current_df)
+          current_df <- do.call(what = causal_order[[i]],
+                                args = list(data = current_df),
+                                env = as.environment(c(as.list(causal_order_env),
+                                                     list(current_df = current_df))))
         }
       }
     }
@@ -243,7 +257,7 @@ declare_design <- function(...,
     call <- attributes(step)$call
     type <- attributes(step)$type
     if (!is.null(call) & !is.null(type) & type != "declare_step") {
-      args <- lang_args(call)
+      args <- args(call)
       has_formula <- sapply(args, is_formula)
       formulae <- args[has_formula]
       if (length(formulae) == 1) {
@@ -335,6 +349,7 @@ declare_design <- function(...,
     )
   }
 
+
   return(structure(
     list(
       data_function = data_function,
@@ -344,6 +359,7 @@ declare_design <- function(...,
       causal_order_env = causal_order_env,
       function_types = function_types,
       causal_order_types = causal_order_types,
+      parameters = parameters,
       title = title,
       authors = authors,
       description = description,

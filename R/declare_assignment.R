@@ -59,7 +59,6 @@
 declare_assignment <-
   function(..., assignment_function = assignment_function_default) {
     args <- eval(substitute(alist(...)))
-    env <- freeze_environment(parent.frame())
     func <- eval(assignment_function)
 
     if (!("data" %in% names(formals(func)))) {
@@ -68,7 +67,7 @@ declare_assignment <-
 
     assignment_function_internal <- function(data) {
       args$data <- data
-      do.call(func, args = args, envir = env)
+      do.call(func, args = args)
     }
 
     attributes(assignment_function_internal) <-
