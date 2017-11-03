@@ -111,14 +111,15 @@ get_unique_variables_by_level <- function(data, ID_label) {
 #' @export
 print_code <- function(design) {
 
-  print_code_helper <- function(step, declare=attr(step, "call"), delegate=attr(step, "delegate")){
-    if(is.null(declare))  return("")
-    delegate <- if(is.null(delegate))  "" else paste(trimws(deparse(delegate)), collapse=" ")
-    sprintf("%s ->\n\t%s", paste(trimws(deparse(declare)), collapse=" "), delegate)
-  }
 
-  cat(unlist(lapply(design$causal_order, print_code_helper)), sep = "\n\n")
+  cat(unlist(lapply(design$causal_order, print_step)), sep = "\n\n")
 
 }
 
+#' @export
+print_step <- function(step, declare=attr(step, "call"), delegate=attr(step, "delegate")){
+  if(is.null(declare))  return("")
+  delegate <- if(is.null(delegate))  "" else paste(trimws(deparse(delegate)), collapse=" ")
+  sprintf("%s ->\n\t%s", paste(trimws(deparse(declare)), collapse=" "), delegate)
+}
 
