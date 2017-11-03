@@ -22,7 +22,7 @@ wrap_step <- function(...) {
   ## into the causal order, i.e.
   ## declare_design(pop(), po, declare_step(mutate(q = 5)))
 
-  step_call <- quos(...)[[1]]
+  delegate <- step_call <- quos(...)[[1]]
 
   arg_names <- names(formals(lang_fn(step_call)))
 
@@ -36,7 +36,8 @@ wrap_step <- function(...) {
   }
 
   attributes(declare_step_function_internal) <-
-    list(call = match.call(), type = "declare_step")
+    list(call = quote(wrap_step), delegate = delegate[[2]],
+         type = "declare_step")
 
   return(declare_step_function_internal)
 
@@ -106,3 +107,18 @@ get_unique_variables_by_level <- function(data, ID_label) {
                    length(unique(x)))) == 1)
   return(names(level_variables)[level_variables])
 }
+
+#' @export
+print_code <- function(design) {
+
+  print_code_helper <- function(step, declare=attr(step, "call"), delegate=attr(step, "delegate")){
+    if(is.null(declare))  return("")
+    delegate <- if(is.null(delegate))  "" else paste(trimws(deparse(delegate)), collapse=" ")
+    sprintf("%s ->\n\t%s", paste(trimws(deparse(declare)), collapse=" "), delegate)
+  }
+
+  cat(unlist(lapply(design$causal_order, print_code_helper)), sep = "\n\n")
+
+}
+
+

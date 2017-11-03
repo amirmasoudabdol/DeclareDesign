@@ -46,6 +46,11 @@ declare_estimand <-
     env <- freeze_environment(parent.frame())
     func <- eval(estimand_function)
 
+    mc <- match.call()
+    delegate <- mc
+    delegate[[1]] <- substitute(estimand_function_default)
+
+
     ## handles four uses cases of labeling so it's really easy to label without specifying
     ## would be great to clean up the next 10 lines
     label_internal <- NULL
@@ -75,7 +80,7 @@ declare_estimand <-
       )
     }
     attributes(estimand_function_internal) <-
-      list(call = match.call(),
+      list(call = mc, delegate = delegate,
            type = "estimand",
            label = label_internal)
 

@@ -86,10 +86,17 @@ declare_estimator <- function(...,
                               coefficient_name = Z,
                               estimand = NULL,
                               label = my_estimator) {
-  model <- if(is.null(estimator_function)) model else NULL
 
   args <- eval(substitute(alist(...)))
   env <- freeze_environment(parent.frame())
+
+  mc <- match.call()
+  delegate <- mc
+  delegate[[1]] <- substitute(model)
+  delegate[c("model", "estimator_function", "coefficient_name", "estimand", "label")] <- NULL
+
+  model <- if(is.null(estimator_function)) model else NULL
+
 
   label <- to_char_except_null(substitute(label))
 
@@ -132,7 +139,7 @@ declare_estimator <- function(...,
   }
 
   attributes(estimator_function_internal) <-
-    list(call = match.call(),
+    list(call = mc, delegate=delegate,
          type = "estimator",
          label = label,
          estimand_label = estimand_label)

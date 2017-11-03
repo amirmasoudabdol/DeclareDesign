@@ -60,6 +60,13 @@ declare_potential_outcomes <-
     env <- freeze_environment(parent.frame())
     func <- eval(potential_outcomes_function)
 
+
+    mc <- match.call()
+    delegate <- mc
+    delegate[[1]] <- substitute(potential_outcomes_function)
+    delegate$potential_outcomes_function <- NULL
+
+
     if (!("data" %in% names(formals(func)))) {
       stop("Please provide a potential_outcomes_function with a data argument.")
     }
@@ -70,7 +77,7 @@ declare_potential_outcomes <-
     }
 
     attributes(potential_outcomes_function_internal) <-
-      list(call = match.call(), type = "potential_outcomes")
+      list(call = mc, delegate=delegate, type = "potential_outcomes")
 
     return(potential_outcomes_function_internal)
   }

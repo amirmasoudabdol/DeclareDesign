@@ -62,6 +62,11 @@ declare_assignment <-
     env <- freeze_environment(parent.frame())
     func <- eval(assignment_function)
 
+    mc <- match.call()
+    delegate <- mc
+    delegate[[1]] <- substitute(assignment_function)
+
+
     if (!("data" %in% names(formals(func)))) {
       stop("Please choose an assignment_function with a data argument.")
     }
@@ -72,7 +77,7 @@ declare_assignment <-
     }
 
     attributes(assignment_function_internal) <-
-      list(call = match.call(), type = "assignment")
+      list(call =mc, delegate=delegate, type = "assignment")
 
     if (from_package(assignment_function, "DeclareDesign") &
         substitute(assignment_function) == "assignment_function_default") {

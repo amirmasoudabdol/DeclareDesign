@@ -56,6 +56,14 @@ declare_sampling <-
     args <- eval(substitute(alist(...)))
     env <- freeze_environment(parent.frame())
     func <- eval(sampling_function)
+
+
+    mc <- match.call()
+    delegate <- mc
+    delegate[[1]] <- substitute(sampling_function_default)
+    delegate$sampling_function_default <- NULL
+
+
     if (!("data" %in% names(formals(func)))) {
       stop("Please choose a sampling_function with a data argument.")
     }
@@ -64,7 +72,7 @@ declare_sampling <-
       do.call(func, args = args, envir = env)
     }
     attributes(sampling_function_internal) <-
-      list(call = match.call(), type = "sampling")
+      list(call = mc, delegate=delegate, type = "sampling")
 
     if (from_package(sampling_function, "DeclareDesign") &
         substitute(sampling_function) == "sampling_function_default") {

@@ -45,6 +45,10 @@ declare_population <-
     env <- freeze_environment(parent.frame())
     func <- eval(population_function)
 
+    mc <- match.call()
+    delegate <- mc
+    delegate[[1]] <- substitute(population_function)
+
     population_function_internal <- function(data = NULL) {
       if (!is.null(data) & ("data" %in% names(formals(func)))) {
         args$data <- data
@@ -52,7 +56,7 @@ declare_population <-
       do.call(func, args = args, envir = env)
     }
     attributes(population_function_internal) <-
-      list(call = match.call(), type = "population")
+      list(call = mc, delegate=delegate, type = "population")
 
     return(population_function_internal)
   }
