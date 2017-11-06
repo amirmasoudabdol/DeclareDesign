@@ -120,6 +120,7 @@ print_code <- function(design) {
 print_step <- function(step, declare=attr(step, "call"), delegate=attr(step, "delegate")){
   if(is.null(declare))  return("")
   delegate <- if(is.null(delegate))  "" else paste(trimws(deparse(delegate)), collapse=" ")
-  sprintf("%s ->\n\t%s", paste(trimws(deparse(declare)), collapse=" "), delegate)
+  #sprintf("%s ->\n\t%s", paste(trimws(deparse(declare)), collapse=" "), delegate)
+  delegate
 }
 
