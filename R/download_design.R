@@ -8,10 +8,7 @@
 #'
 #' @export
 download_design <- function(name) {
-  name <- substitute(name)
-  design_library_url_R <- "http://library.declaredesign.org/designs/"
-  design_URL <- paste0(design_library_url_R, name, ".RDS")
-  readRDS(gzcon(url(design_URL)))
+  print("Function redacted for anonymous review")
 }
 
 #' Get Design Template from the DeclareDesign Library of Research Designs
@@ -23,7 +20,5 @@ download_design <- function(name) {
 #' @export
 download_template <- function(name) {
   name <- substitute(name)
-  design_library_url_R <- "http://library.declaredesign.org/templates/"
-  design_URL <- paste0(design_library_url_R, name, ".RDS")
-  readRDS(gzcon(url(design_URL)))
+  print("Function redacted for anonymous review")
 }
