@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Explore your design diagnosis — diagnosis_helpers • DeclareDesign</title>
+<title>DeclareDesign - Explore your design diagnosis — diagnosis_helpers</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  
+  
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -46,15 +47,42 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">DeclareDesign</a>
+      <a class="navbar-brand" href="../">DeclareDesign</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../articles/DeclareDesign.html">Getting Started</a>
+  <a href="../articles/idea.html">The Idea</a>
 </li>
 <li>
-  <a href="../reference/">Reference</a>
+  <a href="../articles/design_library.html">Design Library</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Using DeclareDesign
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/DeclareDesign.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="../articles/custom_functions.html">Custom functions</a>
+    </li>
+    <li>
+      <a href="../articles/advanced_features.html">Advanced features</a>
+    </li>
+    <li>
+      <a href="../articles/companion_packages.html">Companion packages</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="http://discuss.declaredesign.org">Ask for Help</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -77,17 +105,11 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="http://discuss.declaredesign.org">Discussion Board</a>
-</li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DeclareDesign/DeclareDesign">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
+  <a></a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -139,26 +161,22 @@
                          <span class='no'>my_estimand</span>,
                          <span class='no'>my_assignment</span>,
                          <span class='no'>reveal_outcomes</span>,
-                         <span class='no'>my_estimator</span>)
-
-<span class='fu'>not_run</span>({
-  <span class='co'># using built-in defaults:</span>
-  <span class='no'>diagnosis</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='diagnose_design.html'>diagnose_design</a></span>(<span class='no'>design</span>)
-  <span class='no'>diagnosis</span>
-})
-
+                         <span class='no'>my_estimator</span>)</div><span class='co'># NOT RUN {</span>
+<span class='co'># using built-in defaults:</span>
+<span class='no'>diagnosis</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='diagnose_design.html'>diagnose_design</a></span>(<span class='no'>design</span>)
+<span class='no'>diagnosis</span>
+<span class='co'># }</span><div class='input'>
 <span class='co'># using a user-defined diagnosand</span>
-<span class='no'>my_diagnosand</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='declare_diagnosands.html'>declare_diagnosands</a></span>(<span class='kw'>absolute_error</span> <span class='kw'>=</span> <span class='fu'>mean</span>(<span class='fu'>abs</span>(<span class='no'>est</span> - <span class='no'>estimand</span>)))
+<span class='no'>my_diagnosand</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='declare_diagnosands.html'>declare_diagnosands</a></span>(<span class='kw'>absolute_error</span> <span class='kw'>=</span> <span class='fu'>mean</span>(<span class='fu'>abs</span>(<span class='no'>est</span> - <span class='no'>estimand</span>)))</div><span class='co'># NOT RUN {</span>
+<span class='no'>diagnosis</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='diagnose_design.html'>diagnose_design</a></span>(<span class='no'>design</span>, <span class='kw'>diagnosands</span> <span class='kw'>=</span> <span class='no'>my_diagnosand</span>)
+<span class='no'>diagnosis</span>
 
-<span class='fu'>not_run</span>({
-  <span class='no'>diagnosis</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='diagnose_design.html'>diagnose_design</a></span>(<span class='no'>design</span>, <span class='kw'>diagnosands</span> <span class='kw'>=</span> <span class='no'>my_diagnosand</span>)
-  <span class='no'>diagnosis</span>
+<span class='fu'>get_diagnosands</span>(<span class='no'>diagnosis</span>)
 
-  <span class='fu'>get_diagnosands</span>(<span class='no'>diagnosis</span>)
+<span class='fu'>get_simulations</span>(<span class='no'>diagnosis</span>)
 
-  <span class='fu'>get_simulations</span>(<span class='no'>diagnosis</span>)
-
-})</div></pre>
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -172,8 +190,9 @@
 </div>
 
       <footer>
-      <div class="copyright">
+      <div class="copyright" style="flex:3;">
   <p>Developed by Graeme Blair, Jasper Cooper, Alexander Coppock, Macartan Humphreys.</p>
+  <p>Code is licensed under <a href="https://opensource.org/licenses/mit-license.php">MIT</a> license.</p>
 </div>
 
 <div class="pkgdown">

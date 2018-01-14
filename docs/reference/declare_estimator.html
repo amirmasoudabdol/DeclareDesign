@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Declare an Estimator — declare_estimator • DeclareDesign</title>
+<title>DeclareDesign - Declare an Estimator — declare_estimator</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  
+  
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -46,15 +47,42 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">DeclareDesign</a>
+      <a class="navbar-brand" href="../">DeclareDesign</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../articles/DeclareDesign.html">Getting Started</a>
+  <a href="../articles/idea.html">The Idea</a>
 </li>
 <li>
-  <a href="../reference/">Reference</a>
+  <a href="../articles/design_library.html">Design Library</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Using DeclareDesign
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/DeclareDesign.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="../articles/custom_functions.html">Custom functions</a>
+    </li>
+    <li>
+      <a href="../articles/advanced_features.html">Advanced features</a>
+    </li>
+    <li>
+      <a href="../articles/companion_packages.html">Companion packages</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="http://discuss.declaredesign.org">Ask for Help</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -77,17 +105,11 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="http://discuss.declaredesign.org">Discussion Board</a>
-</li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DeclareDesign/DeclareDesign">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
+  <a></a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -107,7 +129,7 @@
     <p>Declare an Estimator</p>
     
 
-    <pre class="usage"><span class='fu'>declare_estimator</span>(<span class='no'>...</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw'>estimatr</span><span class='kw'>::</span><span class='no'>difference_in_means</span>,
+    <pre class="usage"><span class='fu'>declare_estimator</span>(<span class='no'>...</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw pkg'>estimatr</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/estimatr/topics/difference_in_means'>difference_in_means</a></span>,
   <span class='kw'>estimator_function</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>coefficient_name</span> <span class='kw'>=</span> <span class='no'>Z</span>, <span class='kw'>estimand</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>label</span> <span class='kw'>=</span> <span class='no'>my_estimator</span>)</pre>
     
@@ -120,11 +142,11 @@
     </tr>
     <tr>
       <th>model</th>
-      <td><p>A model function, e.g. lm or glm. If model is specified, the estimator_function argument is ignored.</p></td>
+      <td><p>A model function, e.g. lm or glm. If model is specified, the estimator_function argument is ignored.By default, the model is the <code>difference_in_means</code> function from the estimatr package.</p></td>
     </tr>
     <tr>
       <th>estimator_function</th>
-      <td><p>A function that takes a data.frame as an argument and returns a data.frame with the estimates, summary statistics (i.e., standard error, p-value, and confidence interval) and a label. By default, the estimator function is the <code>difference_in_means</code> function from the estimatr package.</p></td>
+      <td><p>A function that takes a data.frame as an argument and returns a data.frame with the estimates, summary statistics (i.e., standard error, p-value, and confidence interval) and a label.</p></td>
     </tr>
     <tr>
       <th>coefficient_name</th>
@@ -143,6 +165,12 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a function that accepts a data.frame as an argument and returns a data.frame containing the value of the estimator and associated statistics.</p>
+    
+    <h2 class="hasAnchor" id="custom-estimators"><a class="anchor" href="#custom-estimators"></a>Custom Estimators</h2>
+
+    
+    <p><code>estimator_functions</code> implementations should be tidy (accept and return a data.frame)
+    <code>model</code> implementations should at the miminum provide S3 methods for <code>summary</code> and <code>confint</code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -173,11 +201,12 @@
 
 <span class='no'>my_estimator_lm</span> <span class='kw'>&lt;-</span>
  <span class='fu'>declare_estimator</span>(<span class='no'>Y</span> ~ <span class='no'>Z</span>,
-                   <span class='kw'>estimator_function</span> <span class='kw'>=</span> <span class='kw'>estimatr</span><span class='kw'>::</span><span class='no'>lm_robust</span>,
+                   <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw pkg'>estimatr</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/estimatr/topics/lm_robust'>lm_robust</a></span>,
                    <span class='kw'>coefficient_name</span> <span class='kw'>=</span> <span class='st'>"Z"</span>,
                    <span class='kw'>estimand</span> <span class='kw'>=</span> <span class='no'>my_estimand</span>)
 
-<span class='fu'>my_estimator_lm</span>(<span class='no'>df</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.data.frame.default(x[[i]], optional = TRUE, stringsAsFactors = stringsAsFactors): cannot coerce class ""lm_robust"" to a data.frame</span></div><div class='input'>
+<span class='fu'>my_estimator_lm</span>(<span class='no'>df</span>)</div><div class='output co'>#&gt;   estimator_label coefficient_name  est se p ci_lower ci_upper estimand_label
+#&gt; 1    my_estimator                Z 0.25  0 0     0.25     0.25            ATE</div><div class='input'>
 <span class='co'># Use R's built-in lm function via model</span>
 
 <span class='no'>estimator_lm</span> <span class='kw'>&lt;-</span> <span class='fu'>declare_estimator</span>(<span class='no'>Y</span> ~ <span class='no'>Z</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>lm</span>)
@@ -203,8 +232,8 @@
                     <span class='kw'>estimator_function</span> <span class='kw'>=</span> <span class='no'>my_estimator_function</span>,
                     <span class='kw'>estimand</span> <span class='kw'>=</span> <span class='no'>my_estimand</span>)
 
-<span class='fu'>my_estimator_custom</span>(<span class='no'>df</span>)</div><div class='output co'>#&gt;   estimator_label   est estimand_label
-#&gt; 1    my_estimator 0.125            ATE</div><div class='input'>
+<span class='fu'>my_estimator_custom</span>(<span class='no'>df</span>)</div><div class='output co'>#&gt;   estimator_label  est estimand_label
+#&gt; 1    my_estimator 0.12            ATE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -213,6 +242,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#custom-estimators">Custom Estimators</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
@@ -221,8 +252,9 @@
 </div>
 
       <footer>
-      <div class="copyright">
+      <div class="copyright" style="flex:3;">
   <p>Developed by Graeme Blair, Jasper Cooper, Alexander Coppock, Macartan Humphreys.</p>
+  <p>Code is licensed under <a href="https://opensource.org/licenses/mit-license.php">MIT</a> license.</p>
 </div>
 
 <div class="pkgdown">

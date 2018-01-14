@@ -1,3 +1,20 @@
+/* Custom overrides */
+.nav-pills > li.active > .nav-stacked > li.active > a {
+  /* Coolors.co generated palette: 4 shades lighter of same hue */
+  background-color: #C7DAEB;
+  /* Good contrast option for background color selected. */
+  color: #1F2D3D;
+}
+
+.nav-pills > li > .nav-stacked > li > a {
+  /* Left margin for nested lists */
+  margin-left: 10px;
+}
+
+.nav-pills > li > a {
+	padding: 7px 10px;
+}
+
 /* Sticker footer */
 body > .container {
   display: flex;
@@ -32,6 +49,10 @@ footer p {
 
 img.icon {
   float: right;
+}
+
+img {
+  max-width: 100%;
 }
 
 /* Section anchors ---------------------------------*/
@@ -133,9 +154,14 @@ pre, code {
   color: #333;
 }
 
-pre img {
+pre .img {
+  margin: 5px 0;
+}
+
+pre .img img {
   background-color: #fff;
   display: block;
+  height: auto;
 }
 
 code a, pre a {

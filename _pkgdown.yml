@@ -1,10 +1,42 @@
+template:
+  path: "docs/templates"
+
+home:
+  sections:
+    - links
+    - citation
+    - authors
+  link_order:
+    - github
+    - bug_report
+
+roles_include:
+  - aut
+  - cre
+  - fnd
+  - ctb
+
 navbar:
   type: default
   left:
-  - text: "Getting Started"
-    href: articles/DeclareDesign.html
+  - text: "The Idea"
+    href: articles/idea.html
+  - text: "Design Library"
+    href: articles/design_library.html
+  - text: "Using DeclareDesign"
+    menu:
+      - text: Getting Started
+        href: articles/DeclareDesign.html
+      - text: Custom functions
+        href: articles/custom_functions.html
+      - text: Advanced features
+        href: articles/advanced_features.html
+      - text: Companion packages
+        href: articles/companion_packages.html
   - text: Reference
-    href: reference/
+    href: reference/index.html
+  - text: "Ask for Help"
+    href: http://discuss.declaredesign.org
   - text: "Packages"
     menu:
       - text: DeclareDesign
@@ -15,5 +47,5 @@ navbar:
         href: http://fabricatr.declaredesign.org
       - text: estimatr
         href: http://estimatr.declaredesign.org
-  - text: "Discussion Board"
-    href: http://discuss.declaredesign.org
+  right:
+  - text: 

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Declare Design — declare_design • DeclareDesign</title>
+<title>DeclareDesign - Declare Design — declare_design</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  
+  
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -46,15 +47,42 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">DeclareDesign</a>
+      <a class="navbar-brand" href="../">DeclareDesign</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../articles/DeclareDesign.html">Getting Started</a>
+  <a href="../articles/idea.html">The Idea</a>
 </li>
 <li>
-  <a href="../reference/">Reference</a>
+  <a href="../articles/design_library.html">Design Library</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Using DeclareDesign
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/DeclareDesign.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="../articles/custom_functions.html">Custom functions</a>
+    </li>
+    <li>
+      <a href="../articles/advanced_features.html">Advanced features</a>
+    </li>
+    <li>
+      <a href="../articles/companion_packages.html">Companion packages</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="http://discuss.declaredesign.org">Ask for Help</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -77,17 +105,11 @@
     </li>
   </ul>
 </li>
-<li>
-  <a href="http://discuss.declaredesign.org">Discussion Board</a>
-</li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DeclareDesign/DeclareDesign">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
+  <a></a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -170,7 +192,7 @@
                          <span class='no'>my_potential_outcomes</span>,
                          <span class='no'>my_sampling</span>,
                          <span class='no'>my_estimand</span>,
-                         <span class='kw'>dplyr</span><span class='kw'>::</span><span class='fu'>mutate</span>(<span class='kw'>noise_sq</span> <span class='kw'>=</span> <span class='no'>noise</span>^<span class='fl'>2</span>),
+                         <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>noise_sq</span> <span class='kw'>=</span> <span class='no'>noise</span>^<span class='fl'>2</span>),
                          <span class='no'>my_assignment</span>,
                          <span class='no'>reveal_outcomes</span>,
                          <span class='no'>my_estimator</span>)
@@ -187,51 +209,77 @@
 #&gt;          0      500
 #&gt; 
 #&gt; Added variable: noise 
-#&gt;    min median  mean  max   sd N_missing N_unique
-#&gt;  -2.90  -0.04 -0.06 3.59 0.95         0      500
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -2.42  -0.02 0.03 2.84 0.95         0      500
 #&gt; 
 #&gt; Step 2 (potential outcomes): my_potential_outcomes -----------------------------
 #&gt; 
 #&gt; Added variable: Y_Z_0 
-#&gt;    min median  mean  max   sd N_missing N_unique
-#&gt;  -2.90  -0.04 -0.06 3.59 0.95         0      500
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -2.42  -0.02 0.03 2.84 0.95         0      500
 #&gt; 
 #&gt; Added variable: Y_Z_1 
 #&gt;    min median mean  max   sd N_missing N_unique
-#&gt;  -4.16   1.96 1.98 9.30 2.28         0      500
+#&gt;  -5.51   2.08 2.05 9.77 2.19         0      500
 #&gt; 
 #&gt; Step 3 (sampling): my_sampling -------------------------------------------------
 #&gt; 
 #&gt; N = 250 (250 subtracted) 
-#&gt; 
-#&gt; Random sampling procedure: Complete random sampling 
-#&gt; Number of units: 500 
-#&gt; The inclusion probabilities are constant across units.
 #&gt; 
 #&gt; Added variable: S_inclusion_prob 
 #&gt;              0.5
 #&gt;   Frequency  250
 #&gt;  Proportion 1.00
 #&gt; 
+#&gt; Altered variable: ID 
+#&gt;   Before: 
+#&gt;  N_missing N_unique
+#&gt;          0      500
+#&gt; 
+#&gt;   After:
+#&gt;  N_missing N_unique
+#&gt;          0      250
+#&gt; 
+#&gt; Altered variable: noise 
+#&gt;   Before: 
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -2.42  -0.02 0.03 2.84 0.95         0      500
+#&gt; 
+#&gt;   After:
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -2.27   0.09 0.14 2.84 0.94         0      250
+#&gt; 
+#&gt; Altered variable: Y_Z_0 
+#&gt;   Before: 
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -2.42  -0.02 0.03 2.84 0.95         0      500
+#&gt; 
+#&gt;   After:
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -2.27   0.09 0.14 2.84 0.94         0      250
+#&gt; 
+#&gt; Altered variable: Y_Z_1 
+#&gt;   Before: 
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -5.51   2.08 2.05 9.77 2.19         0      500
+#&gt; 
+#&gt;   After:
+#&gt;    min median mean  max   sd N_missing N_unique
+#&gt;  -4.10   2.03 2.13 8.85 2.21         0      250
+#&gt; 
 #&gt; Step 4 (estimand): my_estimand -------------------------------------------------
 #&gt; 
 #&gt; A single draw of the estimand:
 #&gt;  estimand_label estimand
-#&gt;             ATE 2.088682
+#&gt;             ATE        2
 #&gt; 
-#&gt; Step 5 (custom data modification): dplyr::mutate(noise_sq = noise^2) -----------
+#&gt; Step 5 (declare step): dplyr::mutate(noise_sq = noise^2) -----------------------
 #&gt; 
 #&gt; Added variable: noise_sq 
 #&gt;   min median mean  max   sd N_missing N_unique
-#&gt;  0.00   0.35 0.84 7.72 1.18         0      250
+#&gt;  0.00   0.42 0.90 8.06 1.26         0      250
 #&gt; 
 #&gt; Step 6 (assignment): my_assignment ---------------------------------------------
-#&gt; 
-#&gt; Random assignment procedure: Complete random assignment 
-#&gt; Number of units: 250 
-#&gt; Number of treatment arms: 2 
-#&gt; The possible treatment categories are 0 and 1.
-#&gt; The probabilities of assignment are constant across units.
 #&gt; 
 #&gt; Added variable: Z 
 #&gt;                0    1
@@ -247,28 +295,27 @@
 #&gt; 
 #&gt; Added variable: Y 
 #&gt;    min median mean  max   sd N_missing N_unique
-#&gt;  -2.78  -0.01 0.09 4.92 1.18         0      250
+#&gt;  -4.10   0.10 0.32 6.68 1.36         0      250
 #&gt; 
 #&gt; Step 8 (estimator): my_estimator -----------------------------------------------
 #&gt; 
 #&gt; Formula: Y ~ Z 
 #&gt; 
 #&gt; A single draw of the estimator:
-#&gt;  estimator_label coefficient_name      est       se            p ci_lower
-#&gt;     my_estimator                Z 1.959293 0.340372 4.867716e-06 1.259174
-#&gt;  ci_upper estimand_label
-#&gt;  2.659413            ATE
+#&gt;  estimator_label coefficient_name est   se       p ci_lower ci_upper
+#&gt;     my_estimator                Z 2.1 0.53 0.00074     0.95      3.1
+#&gt;  estimand_label
+#&gt;             ATE
 #&gt; </div><div class='input'>
 <span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='post_design.html'>draw_data</a></span>(<span class='no'>design</span>)
 
 <span class='no'>estimates</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='post_design.html'>get_estimates</a></span>(<span class='no'>design</span>)
-<span class='no'>estimands</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='post_design.html'>get_estimands</a></span>(<span class='no'>design</span>)
+<span class='no'>estimands</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='post_design.html'>get_estimands</a></span>(<span class='no'>design</span>)</div><span class='co'># NOT RUN {</span>
+<span class='no'>diagnosis</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='diagnose_design.html'>diagnose_design</a></span>(<span class='no'>design</span>)
 
-<span class='fu'>not_run</span>({
-  <span class='no'>diagnosis</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='diagnose_design.html'>diagnose_design</a></span>(<span class='no'>design</span>)
-
-  <span class='fu'>summary</span>(<span class='no'>diagnosis</span>)
-})</div></pre>
+<span class='fu'>summary</span>(<span class='no'>diagnosis</span>)
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -286,8 +333,9 @@
 </div>
 
       <footer>
-      <div class="copyright">
+      <div class="copyright" style="flex:3;">
   <p>Developed by Graeme Blair, Jasper Cooper, Alexander Coppock, Macartan Humphreys.</p>
+  <p>Code is licensed under <a href="https://opensource.org/licenses/mit-license.php">MIT</a> license.</p>
 </div>
 
 <div class="pkgdown">
