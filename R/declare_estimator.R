@@ -80,10 +80,13 @@
 #'
 #' my_estimator_custom(df)
 #'
-declare_estimator <- function(...,
+declare_estimator <-make_declarations(estimator_handler, step_type="estimator", causal_type="estimator", default_label="my_estimator")
+
+estimator_handler <- function(data, ...,
                               model = estimatr::difference_in_means,
                               estimator_function = NULL,
                               coefficient_name = Z,
+<<<<<<< HEAD
                               estimand = NULL,
                               label = my_estimator) {
 
@@ -102,6 +105,13 @@ declare_estimator <- function(...,
 
   coefficient_name <- to_char_except_null(substitute(coefficient_name))
 
+=======
+                              estimand = NULL, label) {
+  model <- if(is.null(estimator_function)) model else NULL
+
+  # coefficient_name <- to_char_except_null(substitute(coefficient_name))
+  coefficient_name <- reveal_nse_helper(substitute(coefficient_name))
+>>>>>>> master
 
   if (is.null(model) == is.null(estimator_function)) {
     stop("Please provide either an estimator function or a model.")
@@ -121,12 +131,16 @@ declare_estimator <- function(...,
 
   estimand_label <- switch(class(estimand), "character"=estimand, "function"=attributes(estimand)$label)
 
-  estimator_function_internal <- function(data) {
+  # estimator_function_internal <- function(data) {
+    args <- quos(...)
     args$data <- data
     if ("coefficient_name" %in% names(formals(func))) {
       args$coefficient_name <- coefficient_name
     }
-    results <- do.call(func, args = args, envir = env)
+    # results <- do.call(func, args = args)
+    # results <- eval_tidy(quo(func(!!!args)))
+    W <- quo(func(!!!args))
+    results <- eval(quo_expr(W))
     results <- clean(results, coefficient_name) # fit2tidy if a model function, ow I
     return_data <-
       data.frame(estimator_label = label,
@@ -138,6 +152,7 @@ declare_estimator <- function(...,
     return_data
   }
 
+<<<<<<< HEAD
   attributes(estimator_function_internal) <-
     list(call = mc, delegate=delegate,
          type = "estimator",
@@ -146,6 +161,17 @@ declare_estimator <- function(...,
 
   return(estimator_function_internal)
 }
+=======
+#   attributes(estimator_function_internal) <-
+#     list(call = match.call(),
+#          step_type = "estimator",
+#          causal_type = "estimator",
+#          label = label,
+#          estimand_label = estimand_label)
+#
+#   return(estimator_function_internal)
+# }
+>>>>>>> master
 
 fit2tidy <- function(fit, coefficient_name = NULL) {
   summ <- summary(fit)$coefficients
@@ -169,5 +195,5 @@ fit2tidy <- function(fit, coefficient_name = NULL) {
 
 #todo migrate to utils.R
 to_char_except_null <- function(x){
-  if(is.null(x)) NULL else as.character(x)
+  if(is.null(x)) NULL else if(is_quosure(x)) as.character(x[[2]]) else as.character(x)
 }
